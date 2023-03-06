@@ -4,4 +4,5 @@ export type User = {
   token?: string;
   nickname?: string;
   image: string;
+  username?: string;
 };
