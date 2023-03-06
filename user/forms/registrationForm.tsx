@@ -1,15 +1,16 @@
 /* eslint-disable react/no-children-prop */
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import React from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { useCookies } from 'react-cookie';
 
-import { useAppDispatch, useAppSelector } from '../../hooks';
+import { useAppDispatch } from '../../hooks';
 import google from '../img/google.svg';
 import facebook from '../img/facebook.svg';
 import twitter from '../img/twitter.svg';
-import { registerUser } from '../../store/userSlice';
+import { userSlice } from '../../store/userSlice';
 import { User } from '../types/gamesItemTypes';
 
 import {
@@ -39,35 +40,30 @@ const RegistrationForm = () => {
     formState: { errors },
     clearErrors,
   } = useForm<Inputs>();
-
+  const [cookies, setCookies] = useCookies(['user']);
   const dispatch = useAppDispatch();
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [cookies, setCookie] = useCookies(['token', 'user', 'GAME_PLATFORM_REDIRECT_URI']);
-  setCookie('GAME_PLATFORM_REDIRECT_URI', 'https://nextjs-react-games.vercel.app/oauth2/redirect');
   const router = useRouter();
+  const { updateList } = userSlice.actions;
 
-  const { error, loading } = useAppSelector((state) => state.user);
-
-  const onSubmit: SubmitHandler<Inputs> = async (date: Inputs) => {
+  const onSubmit: SubmitHandler<Inputs> = (date: Inputs) => {
     const user: User = {
       image: '',
-      nickname: date.username,
+      username: date.username,
       email: date.email,
       password: date.password,
     };
-
-    const isAuth = await dispatch(registerUser({ user, setCookie }));
-    if (isAuth.meta.requestStatus === 'fulfilled') {
-      clearErrors();
-      router.push('/profile');
-    }
+    console.log('user :', user);
+    clearErrors();
+    dispatch(updateList([user]));
+    cookies.user = user;
+    router.push('/profile');
   };
 
   return (
     <Section>
       <Form onSubmit={handleSubmit(onSubmit)}>
         <DivImgLogo>
-          <a href="http://91.241.64.78:8088/oauth2/authorize/google">
+          <a href="https://www.google.com">
             <ImgLogo src={google.src} alt="google" />
           </a>
           <a href="https://www.facebook.com">
@@ -80,12 +76,6 @@ const RegistrationForm = () => {
         <H4>
           <Span>or with Email</Span>
         </H4>
-        {error === 'loginFalse' && (
-          <PError>
-            Регистрация прошла успешно, но со входом на сайт что-то пошло не так. Попробуйте позже
-            или обратитесь в поддержку
-          </PError>
-        )}
         <Input
           placeholder="Username"
           {...register('username', {
@@ -101,6 +91,7 @@ const RegistrationForm = () => {
           })}
         />
         {errors?.username && <PError>{errors.username.message}</PError>}
+
         <Input
           placeholder="Some@example.com"
           {...register('email', {
@@ -112,7 +103,7 @@ const RegistrationForm = () => {
           })}
         />
         {errors?.email && <PError>{errors.email.message}</PError>}
-        {!errors?.email && error === 'email' && <PError>Данный Email уже занят</PError>}
+
         <Input
           type="password"
           placeholder="Password"
@@ -129,10 +120,8 @@ const RegistrationForm = () => {
           })}
         />
         {errors.password && <PError>{errors.password.message}</PError>}
-        {error === 'unknown' && (
-          <PError>При регистрации что-то пошло не так попробуйте позже</PError>
-        )}
-        <InputBtn type="submit" children="Create" disabled={loading} />
+
+        <InputBtn type="submit" children="Create" />
         <P>
           Already have an account?{' '}
           <Link href="/login">

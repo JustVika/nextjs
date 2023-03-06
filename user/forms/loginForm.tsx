@@ -1,4 +1,5 @@
 /* eslint-disable react/no-children-prop */
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { SubmitHandler, useForm } from 'react-hook-form';
 import React from 'react';
 import Link from 'next/link';
@@ -8,8 +9,7 @@ import { useCookies } from 'react-cookie';
 import facebook from '../img/facebook.svg';
 import google from '../img/google.svg';
 import twitter from '../img/twitter.svg';
-import { useAppSelector, useAppDispatch } from '../../hooks';
-import { loginUser } from '../../store/userSlice';
+import { useAppSelector } from '../../hooks';
 
 import {
   DivImgLogo,
@@ -31,11 +31,7 @@ export type Inputs = {
 };
 
 const LoginForm = () => {
-  const { error, loading } = useAppSelector((state) => state.user);
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [cookies, setCookie] = useCookies(['token', 'user', 'GAME_PLATFORM_REDIRECT_URI']);
   const router = useRouter();
-  const dispatch = useAppDispatch();
 
   const {
     register,
@@ -43,17 +39,25 @@ const LoginForm = () => {
     formState: { errors },
     clearErrors,
   } = useForm<Inputs>();
+  const { users } = useAppSelector((state) => state.user);
+  const [cookies, setCookies] = useCookies(['user']);
 
-  setCookie('GAME_PLATFORM_REDIRECT_URI', 'https://nextjs-react-games.vercel.app/oauth2/redirect');
-
-  const onSubmit: SubmitHandler<Inputs> = async (date) => {
+  const onSubmit: SubmitHandler<Inputs> = (date) => {
     const user = {
       email: date.username,
+      username: date.username,
       password: date.password,
     };
-    const isAuth = await dispatch(loginUser({ user, setCookie }));
-    if (isAuth.meta.requestStatus === 'fulfilled') {
-      clearErrors();
+    // console.log('user :', user);
+
+    clearErrors();
+    const authUser = users.find(
+      (u: any) =>
+        (u.email === user.email || u.username === user.username) && u.password === user.password,
+    );
+    if (authUser) {
+      setCookies('user', authUser);
+      // console.log('auth');
       router.push('/profile');
     }
   };
@@ -62,7 +66,7 @@ const LoginForm = () => {
     <Section>
       <Form onSubmit={handleSubmit(onSubmit)}>
         <DivImgLogo>
-          <a href="http://91.241.64.78:8088/oauth2/authorize/google">
+          <a href="https://www.google.com">
             <ImgLogo src={google.src} alt="google" />
           </a>
           <a href="https://www.facebook.com">
@@ -76,19 +80,15 @@ const LoginForm = () => {
           <Span>or with Email</Span>
         </H4>
         <Input
-          placeholder="User email"
+          placeholder="User Name  or  email..."
           {...register('username', {
             required: 'Required field',
-            pattern: {
-              value: /^\S+@\S+\.\S+$/,
-              message: 'Type valid email',
-            },
           })}
         />
         {errors?.username && <PError>{errors.username.message}</PError>}
+
         <Input
           placeholder="Password"
-          type="password"
           {...register('password', {
             required: 'You must specify a password',
             minLength: {
@@ -103,11 +103,7 @@ const LoginForm = () => {
         />
         {errors.password && <PError>{errors.password.message}</PError>}
 
-        {!errors.password && error === 'loginPassword' && (
-          <PError>Пароль или email введены не верно</PError>
-        )}
-
-        <InputBtn type="submit" children="Log in" disabled={loading} />
+        <InputBtn type="submit" children="Register" />
         <P>
           Don`t have an account?
           <Link href="/registration">
