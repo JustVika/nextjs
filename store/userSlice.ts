@@ -169,5 +169,5 @@ export const userSlice = createSlice({
     });
   },
 });
-
+export const { updateList, currentUser } = userSlice.actions;
 export default userSlice.reducer;
