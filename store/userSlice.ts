@@ -7,6 +7,8 @@ import { User } from '../user/types/gamesItemTypes';
 export interface ReducerInitialState {
   users: User[];
   user: User;
+  loading: boolean;
+  error: string;
 }
 
 const initialState: ReducerInitialState = {
@@ -62,6 +64,8 @@ const initialState: ReducerInitialState = {
     },
   ],
   user: { email: '', password: '', username: '', image: '' },
+  loading: false,
+  error: '',
 };
 
 export const userSlice = createSlice({
