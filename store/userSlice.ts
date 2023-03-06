@@ -6,6 +6,7 @@ import { User } from '../user/types/gamesItemTypes';
 
 export interface ReducerInitialState {
   users: User[];
+  user?:any;
 }
 
 const initialState: ReducerInitialState = {
@@ -68,8 +69,11 @@ export const userSlice = createSlice({
   reducers: {
     updateList(state, action: PayloadAction<User[]>) {
       state.users = state.users.concat(action.payload);
-      console.log(state.users);
     },
+    currentUser(state, action: PayloadAction<User>) {
+      state.user = action.payload;
+    },
+  },
     //
     // extraReducers: {
     //     [fetchLoginUser.pending]: (state) => {
