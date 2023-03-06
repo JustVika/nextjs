@@ -142,6 +142,32 @@ export const userSlice = createSlice({
       state.user = action.payload;
     },
   },
+  extraReducers: (builder) => {
+    builder.addCase(registerUser.fulfilled, (state) => {
+      state.loading = false;
+      state.error = '';
+    });
+    builder.addCase(registerUser.pending, (state) => {
+      state.loading = true;
+      state.error = '';
+    });
+    builder.addCase(registerUser.rejected, (state, action) => {
+      state.loading = false;
+      state.error = String(action.payload);
+    });
+    builder.addCase(loginUser.fulfilled, (state) => {
+      state.loading = false;
+      state.error = '';
+    });
+    builder.addCase(loginUser.pending, (state) => {
+      state.loading = true;
+      state.error = '';
+    });
+    builder.addCase(loginUser.rejected, (state, action) => {
+      state.loading = false;
+      state.error = String(action.payload);
+    });
+  },
 });
 
 export default userSlice.reducer;
