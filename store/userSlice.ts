@@ -3,8 +3,6 @@ import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { fetchLoginUser, fetchRegisterUser } from '../api/service';
 import { User } from '../user/types/gamesItemTypes';
 
-// import {fetchLoginUser, fetchRegisterUser} from '../../api/service';
-
 export interface ReducerInitialState {
   users: User[];
   user: User;
@@ -130,7 +128,6 @@ export const loginUser = createAsyncThunk(
     }
   },
 );
-
 export const userSlice = createSlice({
   name: 'users',
   initialState,
@@ -169,5 +166,7 @@ export const userSlice = createSlice({
     });
   },
 });
+
 export const { updateList, currentUser } = userSlice.actions;
+
 export default userSlice.reducer;
