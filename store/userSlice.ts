@@ -6,7 +6,7 @@ import { User } from '../user/types/gamesItemTypes';
 
 export interface ReducerInitialState {
   users: User[];
-  user?:any;
+  user?: any;
 }
 
 const initialState: ReducerInitialState = {
@@ -73,41 +73,6 @@ export const userSlice = createSlice({
     currentUser(state, action: PayloadAction<User>) {
       state.user = action.payload;
     },
-  },
-    //
-    // extraReducers: {
-    //     [fetchLoginUser.pending]: (state) => {
-    //         state.loading = true;
-    //         state.error = false;
-    //     },
-    //     [fetchLoginUser.fulfilled]: (state, action) => {
-    //         state.username = action.payload.user.username;
-    //         state.email = action.payload.user.email;
-    //         state.img = action.payload.user.image;
-    //         state.loading = false;
-    //     },
-    //     [fetchLoginUser.rejected]: (state, action) => {
-    //         console.log('state :', state);
-    //         state.error = true;
-    //         state.loading = false;
-    //         state.errorMessage = action.payload;
-    //     },
-    //
-    //     [fetchRegisterUser.pending]: (state) => {
-    //         state.loading = true;
-    //         state.error = false;
-    //     },
-    //     [fetchRegisterUser.fulfilled]: (state, action) => {
-    //         state.username = action.payload.user.username;
-    //         state.email = action.payload.user.email;
-    //         state.loading = false;
-    //     },
-    //     [fetchRegisterUser.rejected]: (state, action) => {
-    //         state.error = true;
-    //         state.loading = false;
-    //         state.errorMessage = action.payload;
-    //     },
-    //     }
   },
 });
 
