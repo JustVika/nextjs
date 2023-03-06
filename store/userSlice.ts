@@ -1,5 +1,6 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 
+import { fetchLoginUser, fetchRegisterUser } from '../api/service';
 import { User } from '../user/types/gamesItemTypes';
 
 // import {fetchLoginUser, fetchRegisterUser} from '../../api/service';
@@ -67,6 +68,68 @@ const initialState: ReducerInitialState = {
   loading: false,
   error: '',
 };
+
+export const registerUser = createAsyncThunk(
+  'users/registerUser',
+  async (
+    {
+      user,
+      setCookie,
+    }: {
+      user: User;
+      setCookie: (name: 'user' | 'token', value: string, options?: any) => void;
+    },
+    { rejectWithValue },
+  ) => {
+    try {
+      const response = await fetchRegisterUser(user);
+      if (response.status === 400) {
+        return rejectWithValue('email');
+      }
+      if (!response.ok) {
+        return rejectWithValue('unknown');
+      }
+      const responseLogin = await fetchLoginUser({ login: user.email, password: user.password });
+      if (!responseLogin.ok) {
+        return rejectWithValue('loginFalse');
+      }
+      const body = await responseLogin.json();
+      setCookie('token', body.token);
+      setCookie('user', JSON.stringify(user));
+    } catch (e) {
+      return rejectWithValue('unknown');
+    }
+  },
+);
+
+export const loginUser = createAsyncThunk(
+  'users/loginUser',
+  async (
+    {
+      user,
+      setCookie,
+    }: {
+      user: { email: string; password: string };
+      setCookie: (name: 'user' | 'token', value: string, options?: any) => void;
+    },
+    { rejectWithValue },
+  ) => {
+    try {
+      const response = await fetchLoginUser({ login: user.email, password: user.password });
+      if (response.status === 400) {
+        return rejectWithValue('loginPassword');
+      }
+      if (!response.ok) {
+        throw Error;
+      }
+      const body = await response.json();
+      setCookie('token', body.token);
+      setCookie('user', user.email);
+    } catch (e) {
+      return rejectWithValue('unknownLogin');
+    }
+  },
+);
 
 export const userSlice = createSlice({
   name: 'users',
