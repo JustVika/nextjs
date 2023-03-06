@@ -6,7 +6,7 @@ import { User } from '../user/types/gamesItemTypes';
 
 export interface ReducerInitialState {
   users: User[];
-  user?: any;
+  user: User;
 }
 
 const initialState: ReducerInitialState = {
@@ -61,6 +61,7 @@ const initialState: ReducerInitialState = {
       image: 'https://im.jigsawplanet.com/?rc=img&pid=1dbb9a88027d&size=160',
     },
   ],
+  user: { email: '', password: '', username: '', image: '' },
 };
 
 export const userSlice = createSlice({
